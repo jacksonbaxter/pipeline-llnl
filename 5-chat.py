@@ -212,7 +212,7 @@ with tab1:
             status.update(label="Search complete!", state="complete")
             
         # Display search results in a collapsible container
-        with st.expander("View search results", expanded=True):
+        with st.expander("View search results", expanded=False):
             for i, chunk in enumerate(context.split("\n\n")):
                 text, source_file, page_number, title = extract_metadata_from_chunk(chunk)
                 
