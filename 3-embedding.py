@@ -26,6 +26,8 @@ MAX_TOKENS = 8191  # text-embedding-3-large's maximum context length
 converter = DocumentConverter()
 result = converter.convert("https://arxiv.org/pdf/2408.09869")
 
+converter = DocumentConverter()
+result = converter.convert("test-documents/801449.pdf")
 
 # --------------------------------------------------------------
 # Apply hybrid chunking

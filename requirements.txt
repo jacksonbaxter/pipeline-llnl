@@ -7,3 +7,4 @@ docling
 lancedb
 streamlit
 tiktoken
+streamlit-pdf-viewer
