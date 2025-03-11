@@ -6,6 +6,9 @@ import fitz  # PyMuPDF
 import os
 from streamlit_pdf_viewer import pdf_viewer
 import tempfile
+from extraction import extract_document
+from chunking import chunk_document
+from embedding import embed_document
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +30,35 @@ def init_db():
     db = lancedb.connect("data/lancedb")
     return db.open_table("docling")
 
+def process_document(file_path, file_name):
+    """Run extraction, chunking, and embedding using existing modules."""
+    document = extract_document(file_path)
+    print(f"✅ {file_name} extracted!")
+    chunks = chunk_document(document)
+    print(f"✅ {file_name} chunked!")
+    embed_document(chunks)
+    print(f"✅ {file_name} embedded!")
+    return f"✅ {file_name} processed and stored successfully."
+
+# Sidebar for file upload
+st.sidebar.header("Upload Documents")
+uploaded_file = st.sidebar.file_uploader("Upload a document", type=["pdf", "docx", "txt"], key="file_upload")
+
+if uploaded_file:
+    # Hide the file from the UI before processing
+    with st.spinner("Processing document..."):
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as temp_file:
+            temp_file.write(uploaded_file.read())
+            temp_file_path = temp_file.name
+
+        # Process document
+        status = process_document(temp_file_path, uploaded_file.name)
+
+        # Remove temp file
+        os.remove(temp_file_path)
+
+    st.sidebar.success(status)
+    st.rerun()  # Refreshes UI to remove uploaded file
 
 def get_context(query: str, table, num_results: int = 3) -> str:
     """Search the database for relevant context.
