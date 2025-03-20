@@ -416,17 +416,17 @@ if st.session_state.pdf_info:
             )
 
 # Sidebar section to show existing PDFs in the data/pdfs directory
-st.sidebar.subheader("📂 Stored PDFs")
+st.sidebar.subheader("📂 Stored Files")
 
-pdf_files = [f for f in os.listdir("data/uploads")]
+files = [f for f in os.listdir("data/uploads")]
 
 # Add a search bar
-search_query_documents = st.sidebar.text_input("🔍 Search PDFs", "")
+search_query_documents = st.sidebar.text_input("🔍 Search Files", "")
 
 # Filter PDFs based on search query
-filtered_pdfs = [pdf for pdf in sorted(pdf_files) if search_query_documents.lower() in pdf.lower()]
+filtered_pdfs = [pdf for pdf in sorted(files) if search_query_documents.lower() in pdf.lower()]
 
-with st.sidebar.expander("View stored PDFs"):
+with st.sidebar.expander("View stored Files"):
     if filtered_pdfs:
         for pdf in filtered_pdfs:
             st.write(f"- {pdf}")
