@@ -414,3 +414,21 @@ if st.session_state.pdf_info:
                 page_numbers=page_numbers,
                 excerpts=excerpts
             )
+
+# Sidebar section to show existing PDFs in the data/pdfs directory
+st.sidebar.subheader("📂 Stored PDFs")
+
+pdf_files = [f for f in os.listdir("data/uploads")]
+
+# Add a search bar
+search_query_documents = st.sidebar.text_input("🔍 Search PDFs", "")
+
+# Filter PDFs based on search query
+filtered_pdfs = [pdf for pdf in sorted(pdf_files) if search_query_documents.lower() in pdf.lower()]
+
+with st.sidebar.expander("View stored PDFs"):
+    if filtered_pdfs:
+        for pdf in filtered_pdfs:
+            st.write(f"- {pdf}")
+    else:
+        st.write("No matching PDFs found.")
