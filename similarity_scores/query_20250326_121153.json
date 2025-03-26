@@ -1,0 +1,43 @@
+{
+  "query": "calculation of dose conversion factors for STCs",
+  "timestamp": "20250326_121153",
+  "results": [
+    {
+      "text": "Substituting equation C.8.13 into C.8.12 gives:\n\nWhich is equivalent to:\n\nAs seen in the equation above, the DIL is directly proportional to the beta self-absorption factor and the sampling IRF (ratio of sampling flow rate to breathing rate) and inversely proportional to the dose conversion factor (mrem per actual dpm inhaled.)\nDIL value (in terms of observed activity) for selected STC materials for sampling flow rates from 1 to 5 liters per minute are summarized in Table C.8.13 below\nTable C.8.13",
+      "similarity_score": 0.8350248948370104,
+      "metadata": {
+        "context": "This chunk discusses the calculation of the Derived Investigation Level (DIL) for special tritium compounds (STCs) based on observed activity, emphasizing its dependence on the beta self-absorption factor, sampling flow rate, and dose conversion factor. It references a specific equation relating these factors and introduces Table C.8.13, which summarizes DIL values for various STC materials at different sampling flow rates, contributing to the overall assessment of internal exposure monitoring for STCs within the document.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          102,
+          103
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    },
+    {
+      "text": "La Bone - Potter Method for Calculating STC DCFs from IMBA Output",
+      "similarity_score": 0.8302509434932127,
+      "metadata": {
+        "context": "This chunk refers to a specific method outlined in the document for calculating Dose Conversion Factors (DCFs) for Special Tritium Compounds (STCs) using output from the IMBA (Internal Dosimetry) program. It is part of a larger section discussing various methodologies for assessing internal dosimetry related to STCs, including the implications of absorption types and particle size distributions on dose calculations.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          24
+        ],
+        "title": "C.8.4.3 Alternate Method of Calculating Dose Conversion Factors"
+      }
+    },
+    {
+      "text": "Table C.8.6b Reference STC DCFs for Selected Particle Size Distributions - ACTUAL Activity\nThese values were calculated using custom Mathcad worksheets using the models and assumptions discussed in Section C.8.3 above, including the use of ICRP-60 tissue weighting factors.",
+      "similarity_score": 0.8241175045802035,
+      "metadata": {
+        "context": "This chunk is part of a section detailing the reference dose conversion factors (DCF) for inhalation intakes of special tritium compounds (STCs) based on actual activity, specifically organized by particle size distributions. It emphasizes the methodology used in calculations, which incorporates custom Mathcad worksheets and ICRP-60 tissue weighting factors, contributing to the document's focus on internal dosimetry and health risks associated with STC exposure.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          91
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    }
+  ]
+}
