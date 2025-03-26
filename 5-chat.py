@@ -9,18 +9,24 @@ from streamlit_pdf_viewer import pdf_viewer
 from extraction import extract_document
 from chunking import chunk_document
 from embedding import embed_document, Chunks
+from google import genai
+from google.genai import types
 
 # Load environment variables
 load_dotenv()
 
-# Check if OpenAI API key exists
-def check_api_key():
-    """Check if OpenAI API key exists in environment variables."""
-    return os.getenv("OPENAI_API_KEY") is not None
+# Check if API keys exist
+def check_api_key(api_type):
+    """Check if API key exists in environment variables."""
+    if api_type == "openai":
+        return os.getenv("OPENAI_API_KEY") is not None
+    elif api_type == "google":
+        return os.getenv("GEMINI_API_KEY") is not None
+    return False
 
 # Function to save API key to .env file
-def save_api_key(api_key):
-    """Save OpenAI API key to .env file."""
+def save_api_key(api_key, api_type="openai"):
+    """Save API key to .env file."""
     env_path = ".env"
     
     # Read existing .env content
@@ -29,14 +35,17 @@ def save_api_key(api_key):
         with open(env_path, "r") as f:
             env_content = f.read()
     
-    # Check if OPENAI_API_KEY already exists in the file
-    if "OPENAI_API_KEY=" in env_content:
+    # Set the appropriate environment variable name based on the API type
+    env_var_name = "OPENAI_API_KEY" if api_type == "openai" else "GEMINI_API_KEY"
+    
+    # Check if the API key already exists in the file
+    if f"{env_var_name}=" in env_content:
         # Replace existing key
         lines = env_content.splitlines()
         updated_lines = []
         for line in lines:
-            if line.startswith("OPENAI_API_KEY="):
-                updated_lines.append(f"OPENAI_API_KEY={api_key}")
+            if line.startswith(f"{env_var_name}="):
+                updated_lines.append(f"{env_var_name}={api_key}")
             else:
                 updated_lines.append(line)
         env_content = "\n".join(updated_lines)
@@ -44,20 +53,56 @@ def save_api_key(api_key):
         # Append new key
         if env_content and not env_content.endswith("\n"):
             env_content += "\n"
-        env_content += f"OPENAI_API_KEY={api_key}"
+        env_content += f"{env_var_name}={api_key}"
     
     # Write back to .env file
     with open(env_path, "w") as f:
         f.write(env_content)
     
     # Update environment variable in current session
-    os.environ["OPENAI_API_KEY"] = api_key
+    os.environ[env_var_name] = api_key
     return True
 
-# Initialize OpenAI client (only if API key exists)
-client = None
-if check_api_key():
-    client = OpenAI()
+# Initialize clients (only if API keys exist)
+openai_client = None
+if check_api_key("openai"):
+    openai_client = OpenAI()
+
+gemini_client = None
+if check_api_key("google"):
+    gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Model definitions
+MODELS = {
+    "gpt-4o-mini": {
+        "provider": "openai",
+        "display_name": "GPT-4o Mini (OpenAI)",
+        "model_id": "gpt-4o-mini"
+    },
+    "gemini-2.0-flash": {
+        "provider": "google",
+        "display_name": "Gemini 2.0 Flash (Google)",
+        "model_id": "gemini-2.0-flash"
+    },
+    "gemini-2.0-flash-lite": {
+        "provider": "google",
+        "display_name": "Gemini 2.0 Flash Lite (Google)",
+        "model_id": "gemini-2.0-flash-lite"
+    }
+}
+
+# Function to check if a model is available based on API key
+def is_model_available(model_key):
+    model_info = MODELS.get(model_key)
+    if not model_info:
+        return False
+    
+    if model_info["provider"] == "openai":
+        return check_api_key("openai")
+    elif model_info["provider"] == "google":
+        return check_api_key("google")
+    
+    return False
 
 # Define PDF directory - update this to where your PDFs are stored
 PDF_DIR = "data/pdfs"
@@ -195,7 +240,7 @@ def extract_excerpts(text, max_length=50, overlap=5):
 
 
 def get_chat_response(messages, context: str) -> str:
-    """Get streaming response from OpenAI API.
+    """Get streaming response from the selected model API.
 
     Args:
         messages: Chat history
@@ -212,18 +257,54 @@ def get_chat_response(messages, context: str) -> str:
     {context}
     """
 
-    messages_with_context = [{"role": "system", "content": system_prompt}, *messages]
+    selected_model = st.session_state.get("model", "gpt-4o-mini")
+    model_info = MODELS[selected_model]
+    
+    if model_info["provider"] == "openai":
+        messages_with_context = [{"role": "system", "content": system_prompt}, *messages]
+        
+        # Create the streaming response
+        stream = openai_client.chat.completions.create(
+            model=model_info["model_id"],
+            messages=messages_with_context,
+            temperature=st.session_state.temperature,
+            stream=True,
+        )
+        
+        # Use Streamlit's built-in streaming capability
+        response = st.write_stream(stream)
+    
+    elif model_info["provider"] == "google":
+        # Format messages for Gemini API
+        # Start with the system message
+        formatted_content = [
+            {"role": "user", "parts": [{"text": f"{system_prompt}\n\nFirst user message: {messages[0]['content']}"}]}
+        ]
+        
+        # Add the rest of the conversation (starting from assistant's first response)
+        for i in range(1, len(messages)):
+            role = "model" if messages[i]["role"] == "assistant" else "user"
+            formatted_content.append({"role": role, "parts": [{"text": messages[i]["content"]}]})
+        
+        # Create the streaming response
+        stream = gemini_client.models.generate_content_stream(
+            model=model_info["model_id"],
+            contents=formatted_content,
+            config=types.GenerateContentConfig(temperature=st.session_state.temperature),
+        )
 
-    # Create the streaming response
-    stream = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages_with_context,
-        temperature=st.session_state.temperature,  # Use temperature from session state
-        stream=True,
-    )
+        # Adapt the Gemini stream for Streamlit's write_stream
+        def gemini_stream_adapter():
+            for chunk in stream:
+                if hasattr(chunk, "text") and chunk.text:
+                    yield chunk.text
 
-    # Use Streamlit's built-in streaming capability
-    response = st.write_stream(stream)
+        # Use Streamlit's built-in streaming capability with the adapted stream
+        response = st.write_stream(gemini_stream_adapter())
+    
+    else:
+        response = "Error: Unsupported model provider"
+    
     return response
 
 
@@ -291,20 +372,20 @@ def display_pdf_with_highlights(filename, page_numbers, excerpts):
 # Initialize Streamlit app
 st.title("📚 Document Q&A")
 
-# Check if API key exists, if not, show input form
-if not check_api_key():
-    st.warning("⚠️ OpenAI API key is missing. Please enter your API key to continue.")
+# First, check if OpenAI API key exists, if not, show input form
+if not check_api_key("openai"):
+    st.warning("⚠️ OpenAI API key is required to continue.")
     
-    with st.form("api_key_form"):
+    with st.form("openai_api_key_form"):
         api_key = st.text_input("OpenAI API Key", type="password")
         submit_button = st.form_submit_button("Submit")
         
         if submit_button:
             if api_key and len(api_key) > 20:  # Simple validation for key format
-                if save_api_key(api_key):
-                    st.success("✅ API key saved successfully! Initializing application...")
+                if save_api_key(api_key, "openai"):
+                    st.success("✅ OpenAI API key saved successfully! Initializing application...")
                     # Initialize the OpenAI client with the new key
-                    client = OpenAI()
+                    openai_client = OpenAI()
                     # Rerun the app to refresh with the new API key
                     st.rerun()
                 else:
@@ -312,7 +393,7 @@ if not check_api_key():
             else:
                 st.error("Invalid API key format. Please enter a valid OpenAI API key.")
     
-    # Stop the app here if no API key is provided
+    # Stop execution if OpenAI API key is not available
     st.stop()
 
 # Initialize session state for processed files if it doesn't exist
@@ -323,8 +404,63 @@ if "processed_files" not in st.session_state:
 st.sidebar.header("Upload Documents")
 uploaded_file = st.sidebar.file_uploader("Upload a document", type=["pdf", "docx", "txt"], key="file_upload")
 
-# Add temperature control slider to sidebar
+# Add model selector to sidebar
 st.sidebar.header("Model Settings")
+# Default to gpt-4o-mini or the first available model
+if "model" not in st.session_state:
+    st.session_state.model = "gpt-4o-mini"
+
+# Create model options with availability indicators
+model_options = list(MODELS.keys())
+model_display_names = []
+
+for model_key in model_options:
+    model_info = MODELS[model_key]
+    available = is_model_available(model_key)
+    status = "" if available else " (API Key Required)"
+    model_display_names.append(f"{model_info['display_name']}{status}")
+
+# Create a mapping of display names to model keys
+display_name_to_key = {model_display_names[i]: model_options[i] for i in range(len(model_options))}
+
+# Show model selector with visual indication of availability
+selected_display_name = st.sidebar.selectbox(
+    "Select Model",
+    model_display_names,
+    index=model_display_names.index(next(name for name, key in display_name_to_key.items() if key == st.session_state.model))
+)
+
+# Update the selected model in session state
+previous_model = st.session_state.model
+st.session_state.model = display_name_to_key[selected_display_name]
+
+# Check if Google model is selected but no Google API key exists
+selected_model_info = MODELS[st.session_state.model]
+if selected_model_info["provider"] == "google" and not check_api_key("google"):
+    st.warning(f"⚠️ Google API key is required to use {selected_model_info['display_name']}.")
+    
+    with st.form("google_api_key_form"):
+        api_key = st.text_input("Google API Key", type="password")
+        submit_button = st.form_submit_button("Submit")
+        
+        if submit_button:
+            if api_key and len(api_key) > 20:  # Simple validation for key format
+                if save_api_key(api_key, "google"):
+                    st.success("✅ Google API key saved successfully! Initializing application...")
+                    # Initialize the Google client with the new key
+                    gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+                    # Rerun the app to refresh with the new API key
+                    st.rerun()
+                else:
+                    st.error("Failed to save API key. Please check file permissions.")
+            else:
+                st.error("Invalid API key format. Please enter a valid Google API key.")
+    
+    # Revert to previous model if Google API key is not provided
+    st.session_state.model = previous_model
+    st.rerun()
+
+# Add temperature control slider to sidebar
 if "temperature" not in st.session_state:
     st.session_state.temperature = 0.7  # Default value
 temperature = st.sidebar.slider(

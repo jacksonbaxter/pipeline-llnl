@@ -9,3 +9,4 @@ streamlit
 tiktoken
 streamlit-pdf-viewer
 PyMuPDF
+google-genai
