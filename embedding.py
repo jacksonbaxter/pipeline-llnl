@@ -17,6 +17,23 @@ load_dotenv()
 # Initialize OpenAI client for context generation
 client = OpenAI()
 
+# Create necessary directories with absolute path
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, "data/lancedb")
+os.makedirs(db_path, exist_ok=True)
+# LanceDB will handle persistence
+
+# Connect to LanceDB using absolute path
+print(f"Connecting to LanceDB at: {db_path}")
+db = lancedb.connect(db_path)
+
+# We use a hybrid approach: OpenAI for context generation and Qwen local model for embeddings
+# openai_func is only used for context generation, not for embeddings
+openai_func = get_registry().get("openai").create(name="text-embedding-3-large")
+
+# Default Qwen model for embeddings
+DEFAULT_QWEN_MODEL = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+
 
 def create_correct_schema(vector_dimension):
     """Create a PyArrow schema with the correct nullability settings for LanceDB"""
@@ -35,20 +52,6 @@ def create_correct_schema(vector_dimension):
         pa.field('vector', pa.list_(pa.float64(), vector_dimension), nullable=False),
         pa.field('metadata', metadata_schema, nullable=True),
     ])
-
-# Create necessary directories
-os.makedirs("data/lancedb", exist_ok=True)
-# LanceDB will handle persistence
-
-# Connect to LanceDB
-db = lancedb.connect("data/lancedb")
-
-# We use a hybrid approach: OpenAI for context generation and Qwen local model for embeddings
-# openai_func is only used for context generation, not for embeddings
-openai_func = get_registry().get("openai").create(name="text-embedding-3-large")
-
-# Default Qwen model for embeddings
-DEFAULT_QWEN_MODEL = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
 
 ################################################################################
 # Context Generation Using OpenAI
@@ -164,7 +167,11 @@ def compute_embeddings_batch(
         print(f"\n  - Batch {batch_idx + 1}/{total_batches}:")
         print(f"    Processing items {start_idx + 1}-{end_idx} of {len(texts)}")
         
-        print(f"    Tokenizing texts...")
+        print(f"    Tokenizing texts... ({start_idx + 1}-{end_idx}/{len(texts)} chunks)")
+        # Process each chunk individually to provide detailed progress
+        for i, text in enumerate(batch):
+            print(f"      Processing chunk {start_idx + i + 1}/{len(texts)}")
+            
         inputs = tokenizer(batch, return_tensors='pt', padding=True, truncation=True)
         inputs = {k: v.to(device) for k, v in inputs.items()}
         

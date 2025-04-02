@@ -15,11 +15,52 @@ from extraction import extract_document
 from chunking import chunk_document
 from embedding import embed_document, Chunks, embed_chunks_with_qwen, load_qwen_embedding_model, DEFAULT_QWEN_MODEL
 
+def check_api_key():
+    """Check if OpenAI API key exists in environment variables."""
+    return os.getenv("OPENAI_API_KEY") is not None
+
+def save_api_key(api_key):
+    """Save OpenAI API key to .env file."""
+    env_path = ".env"
+    
+    # Read existing .env content
+    env_content = ""
+    if os.path.exists(env_path):
+        with open(env_path, "r") as f:
+            env_content = f.read()
+    
+    # Check if OPENAI_API_KEY already exists in the file
+    if "OPENAI_API_KEY=" in env_content:
+        # Replace existing key
+        lines = env_content.splitlines()
+        updated_lines = []
+        for line in lines:
+            if line.startswith("OPENAI_API_KEY="):
+                updated_lines.append(f"OPENAI_API_KEY={api_key}")
+            else:
+                updated_lines.append(line)
+        env_content = "\n".join(updated_lines)
+    else:
+        # Append new key
+        if env_content and not env_content.endswith("\n"):
+            env_content += "\n"
+        env_content += f"OPENAI_API_KEY={api_key}"
+    
+    # Write back to .env file
+    with open(env_path, "w") as f:
+        f.write(env_content)
+    
+    # Update environment variable in current session
+    os.environ["OPENAI_API_KEY"] = api_key
+    return True
+
 # Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
-client = OpenAI()
+# Initialize OpenAI client (only if API key exists)
+client = None
+if check_api_key():
+    client = OpenAI()
 
 # Define PDF directory - update this to where your PDFs are stored
 PDF_DIR = "data/pdfs"
@@ -36,13 +77,18 @@ ensure_directories()
 
 
 # Initialize LanceDB connection
+@st.cache_resource
 def init_db():
     """Initialize database connection.
 
     Returns:
         LanceDB table object
     """
-    db = lancedb.connect("data/lancedb")
+    # Use absolute path for LanceDB to avoid path resolution issues
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, "data/lancedb")
+    print(f"Connecting to LanceDB at: {db_path}")
+    db = lancedb.connect(db_path)
     
     # Normal path for first initialization
     try:
@@ -397,7 +443,7 @@ def get_chat_response(messages, context: str) -> str:
     stream = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages_with_context,
-        temperature=0.7,
+        temperature=st.session_state.temperature,
         stream=True,
     )
 
@@ -470,6 +516,30 @@ def display_pdf_with_highlights(filename, page_numbers, excerpts):
 # Initialize Streamlit app
 st.title("📚 Document Q&A")
 
+# Check if API key exists, if not, show input form
+if not check_api_key():
+    st.warning("⚠️ OpenAI API key is missing. Please enter your API key to continue.")
+    
+    with st.form("api_key_form"):
+        api_key = st.text_input("OpenAI API Key", type="password")
+        submit_button = st.form_submit_button("Submit")
+        
+        if submit_button:
+            if api_key and len(api_key) > 20:  # Simple validation for key format
+                if save_api_key(api_key):
+                    st.success("✅ API key saved successfully! Initializing application...")
+                    # Initialize the OpenAI client with the new key
+                    client = OpenAI()
+                    # Rerun the app to refresh with the new API key
+                    st.rerun()
+                else:
+                    st.error("Failed to save API key. Please check file permissions.")
+            else:
+                st.error("Invalid API key format. Please enter a valid OpenAI API key.")
+    
+    # Stop the app here if no API key is provided
+    st.stop()
+
 # Initialize session state for processed files if it doesn't exist
 if "processed_files" not in st.session_state:
     st.session_state.processed_files = set()
@@ -477,6 +547,21 @@ if "processed_files" not in st.session_state:
 # Sidebar for file upload
 st.sidebar.header("Upload Documents")
 uploaded_file = st.sidebar.file_uploader("Upload a document", type=["pdf", "docx", "txt"], key="file_upload")
+
+# Sidebar for model settings
+st.sidebar.header("Model Settings")
+if "temperature" not in st.session_state:
+    st.session_state.temperature = 0.7  # Default value
+
+temperature = st.sidebar.slider(
+    "Temperature", 
+    min_value=0.0, 
+    max_value=1.0, 
+    value=st.session_state.temperature, 
+    step=0.1,
+    help="Lower values make responses more deterministic, higher values more creative"
+)
+st.session_state.temperature = temperature
 
 if uploaded_file:
     # Check if this file has already been processed
@@ -534,7 +619,8 @@ if prompt := st.chat_input("Ask a question about the document"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Get relevant context
-    with st.status("Searching document...", expanded=False) as status:
+    st.header("🔍 Search Results: Relevant Sections")
+    with st.status("View Relevant Sections", expanded=False) as status:
         context, results = get_context(prompt, table)
         st.markdown(
             """

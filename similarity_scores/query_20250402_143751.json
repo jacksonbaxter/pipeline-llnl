@@ -1,0 +1,42 @@
+{
+  "query": "What is the encoder layer?",
+  "timestamp": "20250402_143751",
+  "results": [
+    {
+      "text": "Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types. n is the sequence length, d is the representation dimension, k is the kernel size of convolutions and r the size of the neighborhood in restricted self-attention.",
+      "similarity_score": 0.7318798448532169,
+      "metadata": {
+        "context": "This chunk presents Table 1, which summarizes key metrics such as maximum path lengths, per-layer complexity, and the minimum number of sequential operations associated with different layer types in neural network architectures, specifically in the context of comparing self-attention layers to recurrent and convolutional layers within the Transformer model discussed in the document.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "3.4 Embeddings and Softmax"
+      }
+    },
+    {
+      "text": "We employ three types of regularization during training:",
+      "similarity_score": 0.7148644969258944,
+      "metadata": {
+        "context": "This chunk is part of a section discussing the training methodology of the Transformer model, specifically focusing on the regularization techniques used to enhance model performance and prevent overfitting during the training process.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "5.4 Regularization"
+      }
+    },
+    {
+      "text": "In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is applied to each position separately and identically. This consists of two linear transformations with a ReLU activation in between.\n\nWhile the linear transformations are the same across different positions, they use different parameters from layer to layer. Another way of describing this is as two convolutions with kernel size 1. The dimensionality of input and output is d model = 512 , and the inner-layer has dimensionality d ff = 2048 .",
+      "similarity_score": 0.7074579832265903,
+      "metadata": {
+        "context": "This chunk describes the structure of the feed-forward networks integrated within the encoder and decoder layers of the Transformer model, highlighting the use of linear transformations and ReLU activations, along with the dimensionality of input and inner layers. This information is part of the overall explanation of the Transformer's architecture, which relies solely on attention mechanisms instead of recurrence or convolutions.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          5
+        ],
+        "title": "3.3 Position-wise Feed-Forward Networks"
+      }
+    }
+  ]
+}

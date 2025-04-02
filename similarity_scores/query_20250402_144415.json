@@ -1,0 +1,42 @@
+{
+  "query": "What were the results of the fetal ultrasound?",
+  "timestamp": "20250402_144415",
+  "results": [
+    {
+      "text": "We employ three types of regularization during training:",
+      "similarity_score": 0.6160000574061504,
+      "metadata": {
+        "context": "This chunk is part of a section discussing the training methodology of the Transformer model, specifically focusing on the regularization techniques used to enhance model performance and prevent overfitting during the training process.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "5.4 Regularization"
+      }
+    },
+    {
+      "text": "This section describes the training regime for our models.",
+      "similarity_score": 0.5997279412850702,
+      "metadata": {
+        "context": "This chunk introduces the section that outlines the training methodology used for the Transformer models, detailing the datasets, training parameters, and the overall training process, which is critical for understanding the model's performance and results presented in the document.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "5 Training"
+      }
+    },
+    {
+      "text": "Table 4: The Transformer generalizes well to English constituency parsing (Results are on Section 23 of WSJ)\nincreased the maximum output length to input length + 300 . We used a beam size of 21 and \u03b1 = 0 3 . for both WSJ only and the semi-supervised setting.\nOur results in Table 4 show that despite the lack of task-specific tuning our model performs surprisingly well, yielding better results than all previously reported models with the exception of the Recurrent Neural Network Grammar [8].\nIn contrast to RNN sequence-to-sequence models [37], the Transformer outperforms the BerkeleyParser [29] even when training only on the WSJ training set of 40K sentences.",
+      "similarity_score": 0.5650410643953409,
+      "metadata": {
+        "context": "This chunk discusses the performance of the Transformer model on English constituency parsing, highlighting its effectiveness compared to existing models, particularly the Recurrent Neural Network Grammar and the BerkeleyParser, based on results from the Wall Street Journal training set. It emphasizes the model's strong performance despite a lack of task-specific tuning, contributing to the overall findings of the document regarding the Transformer's generalization across different tasks.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          10
+        ],
+        "title": "6.3 English Constituency Parsing"
+      }
+    }
+  ]
+}
