@@ -563,6 +563,17 @@ temperature = st.sidebar.slider(
 )
 st.session_state.temperature = temperature
 
+# Add to your sidebar settings section
+st.sidebar.header("Search Settings")
+num_results = st.sidebar.slider(
+    "Number of chunks to retrieve", 
+    min_value=1, 
+    max_value=10, 
+    value=3, 
+    step=1,
+    help="Higher values retrieve more context but may include less relevant information"
+)
+ 
 if uploaded_file:
     # Check if this file has already been processed
     file_identifier = f"{uploaded_file.name}_{uploaded_file.size}"
@@ -621,7 +632,7 @@ if prompt := st.chat_input("Ask a question about the document"):
     # Get relevant context
     st.header("🔍 Search Results: Relevant Sections")
     with st.status("View Relevant Sections", expanded=False) as status:
-        context, results = get_context(prompt, table)
+        context, results = get_context(prompt, table, num_results=num_results)
         st.markdown(
             """
             <style>

@@ -1,0 +1,66 @@
+{
+  "query": "What is the attention layer?",
+  "timestamp": "20250409_124942",
+  "results": [
+    {
+      "text": "We employ three types of regularization during training:",
+      "similarity_score": 0.7351734241750479,
+      "metadata": {
+        "context": "This chunk is part of a section discussing the training methodology of the Transformer model, specifically focusing on the regularization techniques used to enhance model performance and prevent overfitting during the training process.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "5.4 Regularization"
+      }
+    },
+    {
+      "text": "Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types. n is the sequence length, d is the representation dimension, k is the kernel size of convolutions and r the size of the neighborhood in restricted self-attention.",
+      "similarity_score": 0.7292040138806879,
+      "metadata": {
+        "context": "This chunk presents Table 1, which summarizes key metrics such as maximum path lengths, per-layer complexity, and the minimum number of sequential operations associated with different layer types in neural network architectures, specifically in the context of comparing self-attention layers to recurrent and convolutional layers within the Transformer model discussed in the document.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "3.4 Embeddings and Softmax"
+      }
+    },
+    {
+      "text": "of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.",
+      "similarity_score": 0.7057406324995261,
+      "metadata": {
+        "context": "This chunk describes a key aspect of the attention mechanism used in the Transformer model, specifically how output values are calculated based on the compatibility between queries and keys. It highlights the foundational principle of weighted summation in attention functions, which is central to the model's ability to capture dependencies across input and output sequences without relying on recurrent architectures.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          4
+        ],
+        "title": "Scaled Dot-Product Attention"
+      }
+    },
+    {
+      "text": "In addition to attention sub-layers, each of the layers in our encoder and decoder contains a fully connected feed-forward network, which is applied to each position separately and identically. This consists of two linear transformations with a ReLU activation in between.\n\nWhile the linear transformations are the same across different positions, they use different parameters from layer to layer. Another way of describing this is as two convolutions with kernel size 1. The dimensionality of input and output is d model = 512 , and the inner-layer has dimensionality d ff = 2048 .",
+      "similarity_score": 0.6888759185067854,
+      "metadata": {
+        "context": "This chunk describes the structure of the feed-forward networks integrated within the encoder and decoder layers of the Transformer model, highlighting the use of linear transformations and ReLU activations, along with the dimensionality of input and inner layers. This information is part of the overall explanation of the Transformer's architecture, which relies solely on attention mechanisms instead of recurrence or convolutions.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          5
+        ],
+        "title": "3.3 Position-wise Feed-Forward Networks"
+      }
+    },
+    {
+      "text": "An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum",
+      "similarity_score": 0.6877296612088534,
+      "metadata": {
+        "context": "This chunk is part of a section discussing the attention mechanism in the Transformer model, specifically explaining how an attention function operates by mapping input queries and key-value pairs to produce an output, which is fundamental to the model's architecture and its ability to handle sequence transduction tasks effectively.",
+        "filename": "1706.03762v7.pdf",
+        "page_numbers": [
+          3
+        ],
+        "title": "3.2 Attention"
+      }
+    }
+  ]
+}
