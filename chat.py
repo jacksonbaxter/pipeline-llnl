@@ -4,6 +4,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import fitz  # PyMuPDF
 import os
+import re
+import difflib
 import shutil
 from streamlit_pdf_viewer import pdf_viewer
 from extraction import extract_document
@@ -397,6 +399,99 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+def find_close_filename(user_input, filenames, cutoff=0.6):
+    """Try to match a user-given filename or keyword to actual uploaded docs."""
+    possible_names = re.findall(r'[\w\-.]+(?:\.pdf|\.docx|\.txt)?', user_input.lower())
+    
+    # Try exact or partial filename match
+    for name in possible_names:
+        matches = difflib.get_close_matches(name, filenames, n=1, cutoff=cutoff)
+        if matches:
+            return matches[0]
+    
+    # Fallback: keyword-based fuzzy match (just look for closest file)
+    matches = difflib.get_close_matches(user_input.lower(), filenames, n=1, cutoff=cutoff)
+    return matches[0] if matches else None
+
+def is_delete_request(prompt, filenames):
+    """Check if prompt asks to delete and return the closest filename."""
+    if re.search(r"\b(delete|remove|discard|erase)\b", prompt, re.IGNORECASE):
+        best_match = find_close_filename(prompt, filenames)
+        if best_match:
+            return True, best_match
+    return False, None
+
+# Display PDFs with highlights
+if st.session_state.pdf_info:
+    st.header("📄 Document Highlights")
+    
+    for filename, info in st.session_state.pdf_info.items():
+        with st.expander(f"View {filename}"):
+            # Convert to standard Python types
+            page_numbers = [int(p) for p in sorted(list(info["page_numbers"]))]
+            excerpts = [str(e) for e in list(info["excerpts"])]
+            
+            display_pdf_with_highlights(
+                filename=filename,
+                page_numbers=page_numbers,
+                excerpts=excerpts
+            )
+
+def delete_file_from_storage(filename):
+    """Safely delete a file from data/pdfs or data/uploads directory."""
+    directories = ["data/pdfs", "data/uploads"]
+    deleted = False
+
+    for directory in directories:
+        full_path = os.path.join(directory, filename)
+        try:
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                deleted = True
+                print(f"🗑️ Deleted file: {full_path}")
+        except Exception as e:
+            print(f"❌ Failed to delete {full_path}: {e}")
+
+    if not deleted:
+        print(f"⚠️ File '{filename}' not found in pdfs or uploads.")
+    return deleted
+
+def list_uploaded_documents(table):
+    """Return a list of all unique filenames in the LanceDB table."""
+    df = table.to_pandas()
+    return sorted(df['metadata'].apply(lambda x: x['filename']).dropna().unique())
+
+uploaded_docs = list_uploaded_documents(table)
+
+def delete_document_by_filename(table, filename):
+    """Delete all rows in the table associated with a given filename."""
+    condition = f'metadata["filename"] == "{filename}"'
+    table.delete(condition)
+    return f"✅ Document '{filename}' and its embeddings have been removed."
+
+st.sidebar.header("🗂️ Manage Documents")
+
+search_query = st.sidebar.text_input("Search for a document (optional)")
+
+uploaded_docs = list_uploaded_documents(table)
+
+filtered_docs = (
+    [doc for doc in uploaded_docs if search_query.lower() in doc.lower()]
+    if search_query
+    else uploaded_docs
+)
+
+st.sidebar.caption(f"📄 {len(filtered_docs)} document(s) shown out of {len(uploaded_docs)} total.")
+
+filename_to_delete = st.sidebar.selectbox("Select a document to delete", filtered_docs)
+
+if st.sidebar.button("Delete Selected Document"):
+    msg1 = delete_document_by_filename(table, filename_to_delete)
+    deleted = delete_file_from_storage(filename_to_delete)
+    msg2 = f"🗑️ File '{filename_to_delete}' deleted from storage." if deleted else f"⚠️ File '{filename_to_delete}' not found on disk."
+    st.sidebar.success(f"{msg1}\n{msg2}")
+    st.rerun()
+
 # Chat input
 if prompt := st.chat_input("Ask a question about the document"):
     # Display user message
@@ -405,6 +500,24 @@ if prompt := st.chat_input("Ask a question about the document"):
 
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
+
+    # Get the current uploaded documents
+    uploaded_docs = list_uploaded_documents(table)
+
+    # Check for delete intent with fuzzy match
+    is_delete, filename = is_delete_request(prompt, uploaded_docs)
+
+    if is_delete:
+        msg1 = delete_document_by_filename(table, filename)
+        deleted = delete_file_from_storage(filename)
+        msg2 = f"🗑️ File '{filename}' deleted from storage." if deleted else f"⚠️ File '{filename}' not found on disk."
+        response = f"{msg1}\n{msg2}"
+
+        with st.chat_message("assistant"):
+            st.markdown(response)
+
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.rerun()
 
     # Get relevant context
     st.header("🔍 Search Results: Relevant Sections")
@@ -490,74 +603,3 @@ if prompt := st.chat_input("Ask a question about the document"):
 
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-# Display PDFs with highlights
-if st.session_state.pdf_info:
-    st.header("📄 Document Highlights")
-    
-    for filename, info in st.session_state.pdf_info.items():
-        with st.expander(f"View {filename}"):
-            # Convert to standard Python types
-            page_numbers = [int(p) for p in sorted(list(info["page_numbers"]))]
-            excerpts = [str(e) for e in list(info["excerpts"])]
-            
-            display_pdf_with_highlights(
-                filename=filename,
-                page_numbers=page_numbers,
-                excerpts=excerpts
-            )
-
-def delete_file_from_storage(filename):
-    """Safely delete a file from data/pdfs or data/uploads directory."""
-    directories = ["data/pdfs", "data/uploads"]
-    deleted = False
-
-    for directory in directories:
-        full_path = os.path.join(directory, filename)
-        try:
-            if os.path.exists(full_path):
-                os.remove(full_path)
-                deleted = True
-                print(f"🗑️ Deleted file: {full_path}")
-        except Exception as e:
-            print(f"❌ Failed to delete {full_path}: {e}")
-
-    if not deleted:
-        print(f"⚠️ File '{filename}' not found in pdfs or uploads.")
-    return deleted
-
-def list_uploaded_documents(table):
-    """Return a list of all unique filenames in the LanceDB table."""
-    df = table.to_pandas()
-    return sorted(df['metadata'].apply(lambda x: x['filename']).dropna().unique())
-
-uploaded_docs = list_uploaded_documents(table)
-
-def delete_document_by_filename(table, filename):
-    """Delete all rows in the table associated with a given filename."""
-    condition = f'metadata["filename"] == "{filename}"'
-    table.delete(condition)
-    return f"✅ Document '{filename}' and its embeddings have been removed."
-
-st.sidebar.header("🗂️ Manage Documents")
-
-search_query = st.sidebar.text_input("Search for a document (optional)")
-
-uploaded_docs = list_uploaded_documents(table)
-
-filtered_docs = (
-    [doc for doc in uploaded_docs if search_query.lower() in doc.lower()]
-    if search_query
-    else uploaded_docs
-)
-
-st.sidebar.caption(f"📄 {len(filtered_docs)} document(s) shown out of {len(uploaded_docs)} total.")
-
-filename_to_delete = st.sidebar.selectbox("Select a document to delete", filtered_docs)
-
-if st.sidebar.button("Delete Selected Document"):
-    msg1 = delete_document_by_filename(table, filename_to_delete)
-    deleted = delete_file_from_storage(filename_to_delete)
-    msg2 = f"🗑️ File '{filename_to_delete}' deleted from storage." if deleted else f"⚠️ File '{filename_to_delete}' not found on disk."
-    st.sidebar.success(f"{msg1}\n{msg2}")
-    st.rerun()
