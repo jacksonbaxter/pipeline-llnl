@@ -506,3 +506,58 @@ if st.session_state.pdf_info:
                 page_numbers=page_numbers,
                 excerpts=excerpts
             )
+
+def delete_file_from_storage(filename):
+    """Safely delete a file from data/pdfs or data/uploads directory."""
+    directories = ["data/pdfs", "data/uploads"]
+    deleted = False
+
+    for directory in directories:
+        full_path = os.path.join(directory, filename)
+        try:
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                deleted = True
+                print(f"🗑️ Deleted file: {full_path}")
+        except Exception as e:
+            print(f"❌ Failed to delete {full_path}: {e}")
+
+    if not deleted:
+        print(f"⚠️ File '{filename}' not found in pdfs or uploads.")
+    return deleted
+
+def list_uploaded_documents(table):
+    """Return a list of all unique filenames in the LanceDB table."""
+    df = table.to_pandas()
+    return sorted(df['metadata'].apply(lambda x: x['filename']).dropna().unique())
+
+uploaded_docs = list_uploaded_documents(table)
+
+def delete_document_by_filename(table, filename):
+    """Delete all rows in the table associated with a given filename."""
+    condition = f'metadata["filename"] == "{filename}"'
+    table.delete(condition)
+    return f"✅ Document '{filename}' and its embeddings have been removed."
+
+st.sidebar.header("🗂️ Manage Documents")
+
+search_query = st.sidebar.text_input("Search for a document (optional)")
+
+uploaded_docs = list_uploaded_documents(table)
+
+filtered_docs = (
+    [doc for doc in uploaded_docs if search_query.lower() in doc.lower()]
+    if search_query
+    else uploaded_docs
+)
+
+st.sidebar.caption(f"📄 {len(filtered_docs)} document(s) shown out of {len(uploaded_docs)} total.")
+
+filename_to_delete = st.sidebar.selectbox("Select a document to delete", filtered_docs)
+
+if st.sidebar.button("Delete Selected Document"):
+    msg1 = delete_document_by_filename(table, filename_to_delete)
+    deleted = delete_file_from_storage(filename_to_delete)
+    msg2 = f"🗑️ File '{filename_to_delete}' deleted from storage." if deleted else f"⚠️ File '{filename_to_delete}' not found on disk."
+    st.sidebar.success(f"{msg1}\n{msg2}")
+    st.rerun()
