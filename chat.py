@@ -743,22 +743,6 @@ if prompt := st.chat_input("Ask a question about the document"):
 
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-# Display PDFs with highlights
-if st.session_state.pdf_info:
-    st.header("📄 Document Highlights")
-    
-    for filename, info in st.session_state.pdf_info.items():
-        with st.expander(f"View {filename}"):
-            # Convert to standard Python types
-            page_numbers = [int(p) for p in sorted(list(info["page_numbers"]))]
-            excerpts = [str(e) for e in list(info["excerpts"])]
-            
-            display_pdf_with_highlights(
-                filename=filename,
-                page_numbers=page_numbers,
-                excerpts=excerpts
-            )
             
 def delete_file_from_storage(filename):
     """Safely delete a file from data/pdfs or data/uploads directory."""
@@ -836,3 +820,19 @@ with st.sidebar.expander("🤖 OpenAI Simple Documents", expanded=True):
                 st.rerun()
             else:
                 st.error("Could not delete: Table or file not found.")
+            
+# Display PDFs with highlights
+if st.session_state.pdf_info:
+    st.header("📄 Document Highlights")
+    
+    for filename, info in st.session_state.pdf_info.items():
+        with st.expander(f"View {filename}"):
+            # Convert to standard Python types
+            page_numbers = [int(p) for p in sorted(list(info["page_numbers"]))]
+            excerpts = [str(e) for e in list(info["excerpts"])]
+            
+            display_pdf_with_highlights(
+                filename=filename,
+                page_numbers=page_numbers,
+                excerpts=excerpts
+            )

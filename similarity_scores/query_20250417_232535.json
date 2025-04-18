@@ -1,0 +1,42 @@
+{
+  "query": "Dose conversion factors for titanium tritide for different particle sizes",
+  "timestamp": "20250417_232535",
+  "results": [
+    {
+      "text": "dpm) = 1.73E-07. Titanium - Type M, 1.DCF  (mrem per  dpm) = 5.44E-08. Titanium - Type M, 2.DCF  (mrem per  dpm) = 4.10E-08. Titanium - Type M, 5.DCF  (mrem per  dpm) = 1.83E-08. Titanium - Type M, 10.DCF  (mrem per  dpm) = 7.24E-09. Titanium - Type S, 0.01.DCF  (mrem per  dpm) = 1.06E-06. Titanium - Type S, 0.1.DCF  (mrem per  dpm) = 1.08E-06. Titanium - Type S, 1.DCF  (mrem per  dpm) = 3.07E-07. Titanium - Type S, 2.DCF  (mrem per  dpm) = 2.13E-07. Titanium - Type S, 5.DCF  (mrem per  dpm) = 7.81E-08. Titanium - Type S, 10.DCF  (mrem per  dpm) = 2.26E-08. Zirconium - Type F, 0.01.DCF  (mrem per  dpm) = 2.46E-08. Zirconium - Type F, 0.1.DCF  (mrem per  dpm) = 1.27E-08. Zirconium - Type F, 1.DCF  (mrem per  dpm) = 1.04E-08. Zirconium - Type F, 2.DCF  (mrem per  dpm) = 1.23E-08. Zirconium - Type F, 5.DCF  (mrem per  dpm) = 1.12E-08. Zirconium - Type F, 10.DCF  (mrem per",
+      "similarity_score": 0.6238945583621459,
+      "metadata": {
+        "context": "",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          91
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    },
+    {
+      "text": "(mrem per  dpm) = 4.10E-08. Titanium - Type M, 5.DCF  (mrem per  dpm) = 1.83E-08. Titanium - Type M, 10.DCF  (mrem per  dpm) = 7.24E-09. Titanium - Type S, 0.01.DCF  (mrem per  dpm) = 1.06E-06. Titanium - Type S, 0.1.DCF  (mrem per  dpm) = 1.08E-06. Titanium - Type S, 1.DCF  (mrem per  dpm) = 3.07E-07. Titanium - Type S, 2.DCF  (mrem per  dpm) = 2.13E-07. Titanium - Type S, 5.DCF  (mrem per  dpm) = 7.81E-08. Titanium - Type S, 10.DCF  (mrem per  dpm) = 2.26E-08. Zirconium - Type F, 0.01.DCF  (mrem per  dpm) = 2.46E-08. Zirconium - Type F, 0.1.DCF  (mrem per  dpm) = 1.27E-08. Zirconium - Type F, 1.DCF  (mrem per  dpm) = 1.04E-08. Zirconium - Type F, 2.DCF  (mrem per  dpm) = 1.23E-08. Zirconium - Type F, 5.DCF  (mrem per  dpm) = 1.12E-08. Zirconium - Type F, 10.DCF  (mrem per  dpm) = 8.68E-09. Zirconium - Type M, 0.01.DCF  (mrem per  dpm) = 1.79E-07. Zirconium - Type M, 0.1.DCF  (mrem per",
+      "similarity_score": 0.6214782118375652,
+      "metadata": {
+        "context": "",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          22
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    },
+    {
+      "text": "(Sv/Bq) = 6.50E-10. Titanium - Type S, 1.DCF  (Sv/Bq) = 1.84E-10. Titanium - Type S, 2.DCF  (Sv/Bq) = 1.28E-10. Titanium - Type S, 5.DCF  (Sv/Bq) = 4.68E-11. Titanium - Type S, 10.DCF  (Sv/Bq) = 1.36E-11. Zirconium - Type F, 0.01.DCF  (Sv/Bq) = 1.48E-11. Zirconium - Type F, 0.1.DCF  (Sv/Bq) = 7.60E-12. Zirconium - Type F, 1.DCF  (Sv/Bq) = 6.26E-12. Zirconium - Type F, 2.DCF  (Sv/Bq) = 7.36E-12. Zirconium - Type F, 5.DCF  (Sv/Bq) = 6.72E-12. Zirconium - Type F, 10.DCF  (Sv/Bq) = 5.21E-12. Zirconium - Type M, 0.01.DCF  (Sv/Bq) = 1.07E-10. Zirconium - Type M, 0.1.DCF  (Sv/Bq) = 1.04E-10. Zirconium - Type M, 1.DCF  (Sv/Bq) = 3.10E-11. Zirconium - Type M, 2.DCF  (Sv/Bq) = 2.25E-11. Zirconium - Type M, 5.DCF  (Sv/Bq) = 9.59E-12. Zirconium - Type M, 10.DCF  (Sv/Bq) = 3.72E-12. Zirconium - Type S, 0.01.DCF",
+      "similarity_score": 0.6172729195003271,
+      "metadata": {
+        "context": "",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          21
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    }
+  ]
+}
