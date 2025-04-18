@@ -13,7 +13,7 @@ import datetime
 from streamlit_pdf_viewer import pdf_viewer
 from extraction import extract_document
 from chunking import chunk_document
-from embedding import embed_document, Chunks, embed_chunks_with_qwen, load_qwen_embedding_model, DEFAULT_QWEN_MODEL
+from embedding import embed_document, embed_document_simple, Chunks, embed_chunks_with_qwen, load_qwen_embedding_model, DEFAULT_QWEN_MODEL
 
 def check_api_key():
     """Check if OpenAI API key exists in environment variables."""
@@ -110,9 +110,20 @@ def init_db():
         table = db.open_table("docling")
         return table
 def get_table():
-    global table
-    if table is None:
-        table = init_db()
+    # Return the correct LanceDB table based on embedding method
+    embedding_method = st.session_state.get("embedding_method", "Contextual Qwen")
+    table_name = "docling_simple" if embedding_method == "OpenAI Simple" else "docling"
+    import lancedb
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, "data/lancedb")
+    db = lancedb.connect(db_path)
+    try:
+        table = db.open_table(table_name)
+        print(f"✅ Opened table {table_name} for search")
+    except Exception:
+        print(f"❌ Table {table_name} does not exist yet")
+        table = None
     return table
 
     
@@ -135,9 +146,11 @@ def process_document(file_path, file_name):
     chunks = chunk_document(document)
     print(f"✅ {file_name} chunked!")
     
-    # Use the table from init_db and update our table variable with the returned one
-    # Pass document path for contextual embeddings
-    new_table = embed_document(chunks, existing_table=table, document_path=file_path)
+    # Choose embedding based on sidebar toggle
+    if st.session_state.get("embedding_method", "Contextual Qwen") == "OpenAI Simple":
+        new_table = embed_document_simple(chunks, existing_table=table, document_path=file_path)
+    else:
+        new_table = embed_document(chunks, existing_table=table, document_path=file_path)
     
     # Store the table in the global variable
     if new_table is not None:
@@ -172,49 +185,55 @@ def get_context(query: str, table, num_results: int = 3) -> tuple:
 
     Args:
         query: User's question
-        table: LanceDB table object
+        table: LanceDB table object (ignored, will fetch correct one per method)
         num_results: Number of results to return
 
     Returns:
         str: Concatenated context from relevant chunks with source information
     """
-    # Use the provided table
-    search_table = table
-    print("Using table for search")
-        
-    # Initialize contexts to handle the case where results is None
+    # Dynamically get the correct table for current embedding method
+    search_table = get_table()
+    print(f"Using table for search: {search_table}")
+
+    # Determine embedding method
+    embedding_method = st.session_state.get("embedding_method", "Contextual Qwen")
     contexts = []
     results = None
-    
+
     try:
-        # Use pure vector search with cosine similarity
-        print("Performing vector search with cosine similarity...")
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        tokenizer, model = load_qwen_embedding_model(DEFAULT_QWEN_MODEL, device=device)
-        # query_vector = embed_chunks_with_qwen([query], tokenizer, model, device=device)[0]
-        
-        # # Search and get results with similarity scores
-        # results = search_table.search(query_vector).limit(num_results).to_pandas()
-        
-        # Get all data from table
         all_data = search_table.to_pandas()
         print(f"Retrieved {len(all_data)} total documents from database")
         if len(all_data) == 0:
             print("No data in table")
             return "", None
-            
-        # Get embeddings and texts from database
+
         chunk_embs = np.array([row["vector"] for _, row in all_data.iterrows()])
         chunk_texts = [row["text"] for _, row in all_data.iterrows()]
-        
-        # Use custom cosine similarity search
-        similarity_results = cosine_similarity_search(
-            query, tokenizer, model, chunk_embs, chunk_texts, 
-            top_k=num_results, device=device
-        )
-        
-        print(f"✅ Found {len(similarity_results)} similar chunks for query: {query}")
-        print(similarity_results)
+
+        if embedding_method == "OpenAI Simple":
+            print("Using OpenAI embeddings for query search...")
+            # Use OpenAI to embed the query
+            from openai import OpenAI
+            client = OpenAI()
+            response = client.embeddings.create(model="text-embedding-3-large", input=[query])
+            query_vector = np.array(response.data[0].embedding)
+            # Compute cosine similarity
+            sim_scores = np.dot(chunk_embs, query_vector) / (np.linalg.norm(chunk_embs, axis=1) * np.linalg.norm(query_vector) + 1e-8)
+            # Get top-k
+            top_k_idx = np.argsort(sim_scores)[-num_results:][::-1]
+            similarity_results = [(chunk_texts[i], sim_scores[i]) for i in top_k_idx]
+            print(f"✅ Found {len(similarity_results)} similar chunks for query: {query}")
+            print(similarity_results)
+        else:
+            print("Using Qwen embeddings for query search...")
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            tokenizer, model = load_qwen_embedding_model(DEFAULT_QWEN_MODEL, device=device)
+            similarity_results = cosine_similarity_search(
+                query, tokenizer, model, chunk_embs, chunk_texts, 
+                top_k=num_results, device=device
+            )
+            print(f"✅ Found {len(similarity_results)} similar chunks for query: {query}")
+            print(similarity_results)
         
         # Convert to a format compatible with the rest of the code
         # Create a dataframe with similar structure to what LanceDB would return
@@ -573,7 +592,16 @@ num_results = st.sidebar.slider(
     step=1,
     help="Higher values retrieve more context but may include less relevant information"
 )
- 
+
+st.sidebar.header("Embedding Settings")
+st.sidebar.radio(
+    "Embedding Method",
+    ["Contextual Qwen", "OpenAI Simple"],
+    index=0,
+    key="embedding_method",
+    help="Toggle between contextual Qwen (LLM context+Qwen) or simple OpenAI sentence embeddings"
+)
+
 if uploaded_file:
     # Check if this file has already been processed
     file_identifier = f"{uploaded_file.name}_{uploaded_file.size}"
@@ -731,3 +759,80 @@ if st.session_state.pdf_info:
                 page_numbers=page_numbers,
                 excerpts=excerpts
             )
+            
+def delete_file_from_storage(filename):
+    """Safely delete a file from data/pdfs or data/uploads directory."""
+    directories = ["data/pdfs", "data/uploads"]
+    deleted = False
+
+    for directory in directories:
+        full_path = os.path.join(directory, filename)
+        try:
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                deleted = True
+                print(f"🗑️ Deleted file: {full_path}")
+        except Exception as e:
+            print(f"❌ Failed to delete {full_path}: {e}")
+
+    if not deleted:
+        print(f"⚠️ File '{filename}' not found in pdfs or uploads.")
+    return deleted
+
+def list_uploaded_documents(table):
+    """Return a list of all unique filenames in the LanceDB table."""
+    df = table.to_pandas()
+    return sorted(df['metadata'].apply(lambda x: x['filename']).dropna().unique())
+
+uploaded_docs = list_uploaded_documents(table)
+
+def delete_document_by_filename(table, filename):
+    """Delete all rows in the table associated with a given filename."""
+    condition = f'metadata["filename"] == "{filename}"'
+    table.delete(condition)
+    return f"✅ Document '{filename}' and its embeddings have been removed."
+
+st.sidebar.header("🗂️ Manage Documents")
+
+# Helper to get table by name
+import lancedb
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, "data/lancedb")
+db = lancedb.connect(db_path)
+def get_table_by_name(name):
+    try:
+        return db.open_table(name)
+    except Exception:
+        return None
+
+# Contextual Qwen Panel
+with st.sidebar.expander("📚 Contextual Qwen Documents", expanded=True):
+    qwen_table = get_table_by_name("docling")
+    qwen_docs = list_uploaded_documents(qwen_table) if qwen_table else []
+    st.caption(f"{len(qwen_docs)} document(s) in Contextual Qwen DB")
+    qwen_file = st.selectbox("Delete from Qwen DB", qwen_docs, key="qwen_delete_select")
+    if st.button("Delete Qwen Document", key="qwen_delete_btn"):
+        msg1 = delete_document_by_filename(qwen_table, qwen_file)
+        deleted = delete_file_from_storage(qwen_file)
+        msg2 = f"🗑️ File '{qwen_file}' deleted from storage." if deleted else f"⚠️ File '{qwen_file}' not found on disk."
+        st.success(f"{msg1}\n{msg2}")
+        st.rerun()
+
+# OpenAI Simple Panel
+with st.sidebar.expander("🤖 OpenAI Simple Documents", expanded=True):
+    simple_table = get_table_by_name("docling_simple")
+    simple_docs = list_uploaded_documents(simple_table) if simple_table else []
+    st.caption(f"{len(simple_docs)} document(s) in OpenAI Simple DB")
+    if len(simple_docs) == 0:
+        st.warning("No documents found in OpenAI Simple DB.")
+    else:
+        simple_file = st.selectbox("Delete from OpenAI Simple DB", simple_docs, key="simple_delete_select")
+        if st.button("Delete OpenAI Simple Document", key="simple_delete_btn"):
+            if simple_table is not None and simple_file:
+                msg1 = delete_document_by_filename(simple_table, simple_file)
+                deleted = delete_file_from_storage(simple_file)
+                msg2 = f"🗑️ File '{simple_file}' deleted from storage." if deleted else f"⚠️ File '{simple_file}' not found on disk."
+                st.success(f"{msg1}\n{msg2}")
+                st.rerun()
+            else:
+                st.error("Could not delete: Table or file not found.")

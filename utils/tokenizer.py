@@ -25,6 +25,10 @@ class OpenAITokenizerWrapper(PreTrainedTokenizerBase):
         """Main method used by HybridChunker."""
         return [str(t) for t in self.tokenizer.encode(text)]
 
+    def encode(self, text: str, add_special_tokens: bool = False, **kwargs) -> List[int]:
+        """HuggingFace-style encode; used by semchunk for token counting."""
+        return self.tokenizer.encode(text)
+
     def _tokenize(self, text: str) -> List[str]:
         return self.tokenize(text)
 

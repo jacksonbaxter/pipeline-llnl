@@ -58,21 +58,35 @@ def create_correct_schema(vector_dimension):
 ################################################################################
 
 def build_contextual_prompt(whole_document: str, chunk: str) -> str:
-    """Builds the prompt for OpenAI to generate context for a chunk."""
+    """Builds a prompt for OpenAI to generate context for a chunk as bullet points, focusing on how the chunk is situated in the rest of the document."""
     prompt = f"""
-<document>
-{whole_document}
-</document>
+    <document>
+    {whole_document}
+    </document>
 
-Here is a chunk of that document:
-<chunk>
-{chunk}
-</chunk>
+    Below is a chunk from the document.
 
-Please give a short, succinct description that situates this chunk 
-within the overall document for the purpose of improving retrieval. 
-Answer only with that short context and nothing else.
-"""
+    Write 3-4 bullet points (not a paragraph, and do not repeat the chunk text, do not use the word chunk at all in your response) that describe how this chunk is situated within the rest of the document. Focus on:
+    - What the chunk is about in relation to the whole document
+    - What came before and after (if relevant)
+    - How it connects to the document's main ideas or sections
+    - Any transitions, summaries, or context that helps place it
+    
+    Use concise, technical language with minimal words per bullet; focus on clarity, structure, and relevance to the document’s flow without repeating content. Avoid full sentences unless necessary for context.
+    
+    Example output from a chunk:
+    - Explains standard encoder-decoder structure in sequence models
+    - Introduces how the Transformer fits this framework
+    - Prepares reader for detailed explanation of Transformer components
+    
+    Chunk:
+    """
+    prompt += f"""
+    {chunk}
+    """
+    prompt += """
+    Bullet points:
+-"""
     return prompt.strip()
 
 
@@ -170,7 +184,7 @@ def compute_embeddings_batch(
         print(f"    Tokenizing texts... ({start_idx + 1}-{end_idx}/{len(texts)} chunks)")
         # Process each chunk individually to provide detailed progress
         for i, text in enumerate(batch):
-            print(f"      Processing chunk {start_idx + i + 1}/{len(texts)}")
+            print(f"      Processing chunk {start_idx + i + 1}/{len(texts)}", flush=True)
             
         inputs = tokenizer(batch, return_tensors='pt', padding=True, truncation=True)
         inputs = {k: v.to(device) for k, v in inputs.items()}
@@ -271,28 +285,36 @@ def embed_document(chunks, existing_table=None, document_path=None):
     """
     if not document_path:
         raise ValueError("document_path is required for contextual embeddings")
-        
-    # Drop the existing table to avoid schema conflicts
-    try:
-        db.drop_table("docling")
-        print("Dropped existing docling table to avoid schema conflicts")
-    except Exception:
-        pass
-        
-    # Create a sample embedding to determine dimensions
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    tokenizer, model = load_qwen_embedding_model(DEFAULT_QWEN_MODEL, device=device)
-    sample_text = "Sample text for dimension detection"
-    sample_emb = embed_chunks_with_qwen([sample_text], tokenizer, model, device=device)[0]
-    vector_dimension = len(sample_emb)
-    print(f"Detected Qwen embedding dimension: {vector_dimension}")
     
-    # Create a custom schema with the right nullability constraints
-    table_schema = create_correct_schema(vector_dimension)
+    # Use the existing table if provided
+    if existing_table is not None:
+        print("Using existing table for embedding")
+        table = existing_table
+    else:
+        # Create a sample embedding to determine dimensions
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        tokenizer, model = load_qwen_embedding_model(DEFAULT_QWEN_MODEL, device=device)
+        sample_text = "Sample text for dimension detection"
+        sample_emb = embed_chunks_with_qwen([sample_text], tokenizer, model, device=device)[0]
+        vector_dimension = len(sample_emb)
+        print(f"Detected Qwen embedding dimension: {vector_dimension}")
+        
+        # Create a custom schema with the right nullability constraints
+        table_schema = create_correct_schema(vector_dimension)
 
-    # Create a new table with the correct schema
-    table = db.create_table("docling", schema=table_schema, mode="overwrite")
-    print(f"Created new table with vector dimension: {vector_dimension}")
+        # Check if table exists first
+        try:
+            table = db.open_table("docling")
+            print(f"Opened existing table with {table.count_rows()} rows")
+        except Exception:
+            # Create a new table if it doesn't exist
+            table = db.create_table("docling", schema=table_schema, mode="create")
+            print(f"Created new table with vector dimension: {vector_dimension}")
+            
+    # Load the model if not already loaded
+    if 'tokenizer' not in locals() or 'model' not in locals():
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        tokenizer, model = load_qwen_embedding_model(DEFAULT_QWEN_MODEL, device=device)
             
     return embed_document_contextual(chunks, table, document_path, tokenizer, model)
 
@@ -322,7 +344,7 @@ def embed_document_contextual(chunks, table, document_path, tokenizer, model):
     total_chunks = len(chunks)
     print(f"Starting to process {total_chunks} chunks for document: {os.path.basename(document_path)}")
     for idx, chunk in enumerate(chunks, 1):
-        print(f"Processing chunk {idx}/{total_chunks} ({idx/total_chunks*100:.1f}%)")
+        print(f"Processing chunk {idx}/{total_chunks} ({idx/total_chunks*100:.1f}%)", flush=True)
         # Generate context for this chunk
         context = generate_chunk_context_openai(
             chunk=chunk,
@@ -404,4 +426,39 @@ def embed_document_contextual(chunks, table, document_path, tokenizer, model):
             return existing_table
 
     # Always return a valid table reference
+    return table
+
+def embed_document_simple(chunks, existing_table=None, document_path=None):
+    """Embeds chunks using OpenAI sentence-level embeddings into a dedicated LanceDB table."""
+    if not document_path:
+        raise ValueError("document_path is required for embeddings")
+    # Prepare data for embedding
+    texts = [chunk.text or "" for chunk in chunks]
+    print(f"⏳ Generating OpenAI embeddings for {len(texts)} chunks...")
+    response = client.embeddings.create(model="text-embedding-3-large", input=texts)
+    embeddings = [item.embedding for item in response.data]
+    # Build processed records
+    processed = []
+    for chunk, vector in zip(chunks, embeddings):
+        page_numbers = sorted(
+            prov.page_no
+            for item in (chunk.meta.doc_items or [])
+            for prov in (item.prov or []) if prov.page_no is not None
+        )
+        metadata = {
+            "context": "",
+            "filename": (chunk.meta.origin.filename or "") if chunk.meta and chunk.meta.origin else "",
+            "page_numbers": page_numbers,
+            "title": (chunk.meta.headings[0] if chunk.meta.headings else "") if chunk.meta and chunk.meta.headings else "",
+        }
+        processed.append({"text": chunk.text or "", "vector": vector, "metadata": metadata})
+    # Upsert into a simple embeddings table
+    table_name = "docling_simple"
+    try:
+        table = db.open_table(table_name)
+        print(f"🔄 Appending {len(processed)} embeddings to {table_name}")
+        table.add(processed)
+    except Exception:
+        print(f"🆕 Creating table {table_name} with {len(processed)} entries")
+        table = db.create_table(table_name, processed, mode="create")
     return table
