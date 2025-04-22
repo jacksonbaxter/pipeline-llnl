@@ -1,0 +1,78 @@
+{
+  "query": "Dose conversion factors for titanium tritide for different particle sizes",
+  "timestamp": "20250418_105327",
+  "results": [
+    {
+      "text": "Figure C.8.9",
+      "similarity_score": 0.8507862539555606,
+      "metadata": {
+        "context": "- Discusses dose conversion factors for inhalation intakes of special tritium compounds (STCs).\n- Follows detailed calculations and considerations of self-absorption factors for different STC materials.\n- Connects to broader themes of internal dosimetry and monitoring programs outlined earlier in the document.\n- Provides context for subsequent sections on urine bioassay factors and monitoring strategies related to STC exposure.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          30
+        ],
+        "title": "Dose Conversion Factor vs. Particle Size Distribution for Type M STCs"
+      }
+    },
+    {
+      "text": "The key assumptions used for dosimetry modeling of inhalation intakes of STCs are as follows:\n1. The ICRP-66 respiratory tract model is used to calculate the deposition, retention, and absorption of inhaled Type F, Type M, and Type S tritiated particulates,\n2. The tritiated particulate is assumed to behave like the substrate (e.g., titanium, in the case of titanium-tritide) until it is absorbed from the respiratory tract and/or the GI tract  into the bloodstream,\n3. Unless specifically stated otherwise, f1 values for absorption from the GI Tract to the bloodstream are based on the substrate element, and taken from Table B.1. of ICRP-68,\n4. Upon absorption into the bloodstream (from either the lungs or GI Tract), the tritium is assumed to follow the biokinetic model of HTO,\n5. The beta particle emissions from tritium activity within STC particles in the respiratory tract or GI Tract regions are assumed to be attenuated.  The amount of attenuation is described by an energy 'Self Absorption Factor' or SAFe value - that represents the fraction of beta energy emitted from the particle. Currently, LLNL is using the methodology used by the Mound Technical Basis Document (Mound 2001) to calculate these SAFe values.\n(Note that these SAFe values are different from the 'beta particle Self Absorption Factors' SAF \uf062 which are used to convert 'observed' LSC activity to 'actual' LSC activity (see discussion below in Section C.8.7).)",
+      "similarity_score": 0.8387124515632606,
+      "metadata": {
+        "context": "- Details key assumptions for dosimetry modeling of inhalation intakes of special tritium compounds (STCs).\n- Follows a discussion on the biokinetic models and factors affecting dose calculations.\n- Prepares the reader for subsequent sections on calculating dose conversion factors and specific modeling approaches.\n- Highlights distinctions between self-absorption factors relevant to beta emissions and those used in liquid scintillation counting.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          8
+        ],
+        "title": "C.8.3.2 Dosimetry Modeling for Inhalation Intakes of STCs"
+      }
+    },
+    {
+      "text": "Figure C.8.8",
+      "similarity_score": 0.8381628428480049,
+      "metadata": {
+        "context": "- Details dose conversion factors (DCFs) for various special tritium compounds (STCs) based on inhalation scenarios.\n- Follows previous sections on theoretical models and assumptions regarding STC behavior in biological systems.\n- Leads into practical applications, including derived air concentrations (DACs) and annual limits of intake (ALIs) for workplace monitoring.\n- Connects to overarching themes of internal dosimetry, risk assessment, and safety management in environments with potential tritium exposure.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          29
+        ],
+        "title": "Dose Conversion Factor vs. Particle Size Distribution for Type F STCs"
+      }
+    },
+    {
+      "text": "Dose Conversion Factors for Selected STCs (5 microns AMAD)\nE-11  ding the use of ICRP-60 These values were calculated using custom Mathcad worksheets using the models and assumptions discussed in Section C.8.3 above, inclu tissue weighting factors.  HTO value from DCFPAK 2.2 listed for comparison purposes.",
+      "similarity_score": 0.8378768261566389,
+      "metadata": {
+        "context": "- Presents reference dose conversion factors for inhalation intakes of special tritium compounds (STCs) with a specific particle size distribution.\n- Follows detailed explanations of methodologies and assumptions regarding inhalation dosimetry and STC behavior in previous sections.\n- Connects to earlier discussions on the impact of absorption types and particle sizes on dose calculations.\n- Serves as a basis for subsequent sections on monitoring, investigation levels, and health risks associated with STC exposure.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          20
+        ],
+        "title": "C.8.4.2 Reference Inhalation Dose Conversion Factors"
+      }
+    },
+    {
+      "text": "Tables C.8.6a and C.8.6b below list reference dose conversion factors for a broad range of particle size distributions.",
+      "similarity_score": 0.8373932113960045,
+      "metadata": {
+        "context": "- Provides reference dose conversion factors for inhalation intakes of special tritium compounds (STCs).\n- Follows a detailed discussion of dose conversion methods and assumptions related to STCs.\n- Connects to the broader context of internal dosimetry and worker safety assessments within the document.\n- Precedes further calculations on annual limits of intake (ALI) and derived air concentrations (DAC) for STCs.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          21
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    },
+    {
+      "text": "The key to calculation of dose conversion factors for STCs is the use of the above-discussed energy self-absorption factors to correct for the fraction of tritium beta energy that does not escape from the STC particle, and therefore does not contribute to organ doses.  As discussed in Section C.8.3, this correction is applied to doses received by the various regions of the lungs and the GI tract while the STC activity is assumed to be in particulate form.  Once the tritium in the STC particulate is 'absorbed' (transformed into HTO), it is treated as 'normal' tritiated water, and the standard ICRP dosimetry assumptions (and standard SEE values) for tritiated water are used.\nThe correction for the energy self-absorption factor may be applied prospectively to either the specific effective energy (SEE) values used to calculate the pertinent organ doses, or retrospectively to the organ doses calculated using 'standard' SEE values.",
+      "similarity_score": 0.8324548820611248,
+      "metadata": {
+        "context": "- Details the calculation of dose conversion factors specific to special tritium compounds (STCs).\n- References previous sections (C.8.3) for context regarding energy self-absorption factors.\n- Connects the discussion of STC dosimetry with standard practices for tritiated water (HTO) dosimetry.\n- Prepares for subsequent sections on application of energy self-absorption factors to organ dose calculations.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          18
+        ],
+        "title": "C.8.4.1 Calculation of Dose Conversion Factors"
+      }
+    }
+  ]
+}

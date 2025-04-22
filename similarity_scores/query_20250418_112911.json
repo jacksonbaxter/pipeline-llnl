@@ -1,0 +1,42 @@
+{
+  "query": "LLNL-specific facilities that handle or handled STCs\n",
+  "timestamp": "20250418_112911",
+  "results": [
+    {
+      "text": "In the past, several facilities associated with the NOVA laser project handled multi-curie quantities of tritium in small glass micro-spheres.  With decontamination and demolition of the NOVA target bay, the source of STC's in this facility no longer exists.",
+      "similarity_score": 0.8132180692157545,
+      "metadata": {
+        "context": "- Discusses historical operations involving Special Tritium Compounds (STCs) at NOVA laser project facilities.\n- Follows the examination of current and past handling of STCs, focusing on contamination and cleanup efforts.\n- Connects to overall themes of tritium safety, monitoring, and internal dosimetry practices within the document.\n- Serves as a transition to further discussions on the implications of past activities on current safety protocols and monitoring strategies.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "\uf0b7 NOVA Facilities"
+      }
+    },
+    {
+      "text": "Past and current operations at LLNL have used special tritium compounds (STCs).  These include the following, organized by facility:\n\uf0b7 Rotating Target Neutron Source Target Facilities (RTNS-II)\nMulti-thousand curie titanium-tritide targets were used at the now deactivated Rotating Target Neutron Source Facility (Building B292).  Tritium targets have been removed from this facility, however there is known tritium contamination in the target area and it is anticipated that some fraction of this contamination is STCs.  Therefore, STCs must be considered during facility maintenance activities and D&D operations.\n\uf0b7 Building 331 (The 'Tritium  Facility'),\nGram quantities of tritium gas (generally T2) have been and may be handled in the Tritium Facility, Building 331.  Large quantities of tritium have been and may be present in the facility as hydrides on uranium or palladium storage beds, and as HTO in molecular sieve traps.  In some of the older containment structures (hoods, glove boxes) tritium was present as a metal tritide (e.g., titanium-tritide) or in other solid compounds. Preparation and handling of TiT2 targets, tritium recovery and grinder operations are known to have STCs.  According to the B331 monitoring plan for grinder operations, ZnO STCs are anticipated.\nRadioactive and Hazardous Waste Management (RHWM) buildings and facilities\n\uf0b7 Tritium waste handling from other facilities at LLNL.",
+      "similarity_score": 0.8039588189312817,
+      "metadata": {
+        "context": "- Details specific historical and current operations involving special tritium compounds (STCs) at LLNL facilities.\n- Follows a discussion on the unique dosimetry challenges posed by STCs, emphasizing the need for careful monitoring and handling.\n- Precedes sections on dose assessment and monitoring strategies, linking operational practices to safety protocols.\n- Supports the overall objective of the document to provide comprehensive guidelines for managing STC exposure risks and ensuring regulatory compliance.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "C.8.2 LLNL Facility Specific Information"
+      }
+    },
+    {
+      "text": "In the past, titanium-tritide compounds have been used in a number of applications, including targets for neutron generators.  Compromised targets or other titanium-tritide compounds, can lead to particulate tritides.  Low to relatively high levels of tritium still remain in retired experimental facilities and areas pending decontamination and demolition (e.g., B212).  For past operations and facilities with legacy tritium contamination, STCs must be considered during facility maintenance activities and D&D operations.\nSeveral million telephone dials containing tritium were sent to LLNL for H3 recovery. Some dials were intentionally crushed using the B331 grinder (see B331 discussion above), until this effort was abandoned in 2011.  H3 bearing phone dials were staged in other buildings across the site (RHWM, B251, etc.) but not involved in any recovery activities, and hence intact phone dials should not pose internal STC exposure concerns.",
+      "similarity_score": 0.8039548063029734,
+      "metadata": {
+        "context": "- Discusses historical use of titanium-tritide compounds and their implications for legacy contamination in facilities.\n- Follows a section on specific facilities and operations at LLNL, linking past activities to current safety considerations.\n- Highlights the need for consideration of STCs in maintenance and decommissioning (D&D) operations, reinforcing the document's focus on radiation safety and monitoring.\n- Sets the stage for subsequent sections on monitoring approaches and risk assessment related to STCs, contributing to the document's overall narrative on internal dosimetry.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "\uf0b7 Other Facilities"
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "query": "How is the self-absorption factor (SAFe) calculated for STCs and how does it impact dose?",
+  "timestamp": "20250418_080729",
+  "results": [
+    {
+      "text": "In the case of STCs, where some (or much) of the activity may be imbedded within metal particulates, a significant portion of the beta energy may be attenuated before the beta particle reaches any tissue.  Thus, for the source and target organs in which STCs may be present (the compartments of the respiratory tract and GI tract as indicated in red text in the Table above) an energy 'Self Absorption Factor' must be applied to the 'normal' tritium SEE for that source and target region.\nThese energy Self Absorption Factors (defined as the fraction of beta energy emitted from the STC particle) is a complex function of the material density, and the size and shape of the particle.  These SAFe values can range from about 1.0 (100% of energy emitted) for very small, low density materials, down to about 0.1 (10% of energy emitted) for large particle, high density materials.",
+      "similarity_score": 0.8646142726293824,
+      "metadata": {
+        "context": "- Discusses the concept of energy Self Absorption Factors (SAFe) in relation to STCs and their impact on dose calculations.\n- Follows detailed explanations of STC dosimetry and the complexities associated with various material properties.\n- Connects to earlier sections on internal dosimetry, emphasizing the importance of accurate modeling for dose assessment.\n- Sets the stage for subsequent sections that likely explore practical applications and calculations involving SAFe values.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          13
+        ],
+        "title": "C.8.3.5 Energy Self Absorption Factor (SAFe) Values"
+      }
+    },
+    {
+      "text": "SAF-energy values for distributions below 0.1 microns, AMAD, are assumed to be 1.0.\nThe LLNL-calculated SAFe values are plotted below in Figure C.8.3.  As might be expected, the SAFe value (fraction of energy emitted) drops dramatically as the particle diameter increases. As the AMAD drops below about 0.1 microns, the value of SAFe asymptotes to 1.0 (100% of the energy is available for deposition in tissue).  One can also see a 'spread' in values as a function of the material density.  This spread is most dramatic at the larger AMAD values.",
+      "similarity_score": 0.8526850807391044,
+      "metadata": {
+        "context": "- Discusses energy self-absorption factor (SAFe) values related to tritium dosimetry.\n- Follows detailed analysis of dose conversion factors and their dependencies on particle size distribution.\n- Provides visual data representation (Figure C.8.3) to illustrate how SAFe varies with particle diameter and density.\n- Connects to broader themes of internal dosimetry and intake assessments within the overall framework of the document.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          15
+        ],
+        "title": "Energy Self-Absorption Factors (SAFe) for Polydisperse Special Tritium Compounds a"
+      }
+    },
+    {
+      "text": "Dose conversion factors for intakes of STCs are influenced primarily by the following factors:\n\uf0b7 Absorption Type,\n\uf0b7 Particle Size Distribution,\n\uf0b7 Energy Self Absorption Factor (SAFe), and\n\uf0b7 Fractional Uptake from GI Tract (f1).\nThe interaction among these factors is complex, and can be difficult to predict.  The discussions below may assist the reader in understanding some of these relationships.\nThe foundation for dose conversion factors used for STCs is the set of 'normal' dose conversion factors obtained using standard biokinetic models - without the application of any energy selfabsorption factors.  These uncorrected 'foundation' DCFs for selected STC materials are presented in Figure C.8.6.  The highest curve represents Type S materials, the middle curve represents Type M materials, and the lowest curve represents Type F materials.\nThe most obvious feature of this graph is the great difference among the DCFs for the three absorption types.  This difference reflects the fact that the longer residence time in the lungs (for Type M and Type S materials) results in a much larger (uncorrected) effective dose.\nAn overview of the dose conversion factors (Committed Effective Dose per unit intake of actual activity) for Types F, M, and S for selected STC materials is presented in Figures C.8.7, C.8.8, and C.8.9, respectively.  The differences in the curves for each material are due to the different SAFe values and the different (in some cases) f1 values.  Factors such as the deposition and retention patterns in the lungs are the same for each of the materials, because, for a given absorption type, these parameters depend only on the particle size distribution.\nFigure C.8.7",
+      "similarity_score": 0.8231283349443016,
+      "metadata": {
+        "context": "- Discusses factors influencing dose conversion factors (DCFs) for special tritium compounds (STCs).\n- Builds on previous sections detailing the complexities of STC dosimetry, leading to the foundation of standard DCFs.\n- Prepares for visual representations of DCFs in subsequent figures, highlighting differences among absorption types.\n- Connects to the overarching themes of internal dosimetry and risk assessment within the document.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          26,
+          28
+        ],
+        "title": "C.8.4.4 Factors Affecting Dose Conversion Factors"
+      }
+    }
+  ]
+}

@@ -31,8 +31,8 @@ db = lancedb.connect(db_path)
 # openai_func is only used for context generation, not for embeddings
 openai_func = get_registry().get("openai").create(name="text-embedding-3-large")
 
-# Default Qwen model for embeddings
-DEFAULT_QWEN_MODEL = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+# Default Qwen model for embeddings, loaded from environment
+DEFAULT_QWEN_MODEL = os.getenv("QWEN_MODEL_NAME", "Alibaba-NLP/gte-Qwen2-1.5B-instruct")
 
 
 def create_correct_schema(vector_dimension):

@@ -1,0 +1,78 @@
+{
+  "query": "LLNL-specific facilities that handle or handled STCs",
+  "timestamp": "20250418_110333",
+  "results": [
+    {
+      "text": "In the past, several facilities associated with the NOVA laser project handled multi-curie quantities of tritium in small glass micro-spheres.  With decontamination and demolition of the NOVA target bay, the source of STC's in this facility no longer exists.",
+      "similarity_score": 0.8123299340476683,
+      "metadata": {
+        "context": "- Discusses historical operations involving Special Tritium Compounds (STCs) at NOVA laser project facilities.\n- Follows the examination of current and past handling of STCs, focusing on contamination and cleanup efforts.\n- Connects to overall themes of tritium safety, monitoring, and internal dosimetry practices within the document.\n- Serves as a transition to further discussions on the implications of past activities on current safety protocols and monitoring strategies.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "\uf0b7 NOVA Facilities"
+      }
+    },
+    {
+      "text": "In the past, titanium-tritide compounds have been used in a number of applications, including targets for neutron generators.  Compromised targets or other titanium-tritide compounds, can lead to particulate tritides.  Low to relatively high levels of tritium still remain in retired experimental facilities and areas pending decontamination and demolition (e.g., B212).  For past operations and facilities with legacy tritium contamination, STCs must be considered during facility maintenance activities and D&D operations.\nSeveral million telephone dials containing tritium were sent to LLNL for H3 recovery. Some dials were intentionally crushed using the B331 grinder (see B331 discussion above), until this effort was abandoned in 2011.  H3 bearing phone dials were staged in other buildings across the site (RHWM, B251, etc.) but not involved in any recovery activities, and hence intact phone dials should not pose internal STC exposure concerns.",
+      "similarity_score": 0.8055530993920395,
+      "metadata": {
+        "context": "- Discusses historical use of titanium-tritide compounds and their implications for legacy contamination in facilities.\n- Follows a section on specific facilities and operations at LLNL, linking past activities to current safety considerations.\n- Highlights the need for consideration of STCs in maintenance and decommissioning (D&D) operations, reinforcing the document's focus on radiation safety and monitoring.\n- Sets the stage for subsequent sections on monitoring approaches and risk assessment related to STCs, contributing to the document's overall narrative on internal dosimetry.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "\uf0b7 Other Facilities"
+      }
+    },
+    {
+      "text": "Past and current operations at LLNL have used special tritium compounds (STCs).  These include the following, organized by facility:\n\uf0b7 Rotating Target Neutron Source Target Facilities (RTNS-II)\nMulti-thousand curie titanium-tritide targets were used at the now deactivated Rotating Target Neutron Source Facility (Building B292).  Tritium targets have been removed from this facility, however there is known tritium contamination in the target area and it is anticipated that some fraction of this contamination is STCs.  Therefore, STCs must be considered during facility maintenance activities and D&D operations.\n\uf0b7 Building 331 (The 'Tritium  Facility'),\nGram quantities of tritium gas (generally T2) have been and may be handled in the Tritium Facility, Building 331.  Large quantities of tritium have been and may be present in the facility as hydrides on uranium or palladium storage beds, and as HTO in molecular sieve traps.  In some of the older containment structures (hoods, glove boxes) tritium was present as a metal tritide (e.g., titanium-tritide) or in other solid compounds. Preparation and handling of TiT2 targets, tritium recovery and grinder operations are known to have STCs.  According to the B331 monitoring plan for grinder operations, ZnO STCs are anticipated.\nRadioactive and Hazardous Waste Management (RHWM) buildings and facilities\n\uf0b7 Tritium waste handling from other facilities at LLNL.",
+      "similarity_score": 0.8001045792778466,
+      "metadata": {
+        "context": "- Details specific historical and current operations involving special tritium compounds (STCs) at LLNL facilities.\n- Follows a discussion on the unique dosimetry challenges posed by STCs, emphasizing the need for careful monitoring and handling.\n- Precedes sections on dose assessment and monitoring strategies, linking operational practices to safety protocols.\n- Supports the overall objective of the document to provide comprehensive guidelines for managing STC exposure risks and ensuring regulatory compliance.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          6
+        ],
+        "title": "C.8.2 LLNL Facility Specific Information"
+      }
+    },
+    {
+      "text": "W. G. Mansfield, M. L. Lobaugh, L. I. Tai, A. R. Wood-Zika\nJuly 20, 2012",
+      "similarity_score": 0.7871124948134481,
+      "metadata": {
+        "context": "- Provides disclaimers and legal context regarding the document's content and its sponsorship by the U.S. government.\n- Details the contractual relationship between Lawrence Livermore National Laboratory and the U.S. Department of Energy.\n- Serves as a preamble to sections on dosimetry modeling and dose conversion factors for special tritium compounds (STCs).\n- Sets the stage for subsequent technical discussions on assessment and monitoring of STCs within occupational safety frameworks.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          1
+        ],
+        "title": "Internal Dosimetry and Monitoring for Special Tritium Compounds (STCs)"
+      }
+    },
+    {
+      "text": "Tritium target preparation and handling in Building 298, includes palladium storage beds which each contain a maximum of 400 curies.  Associated hardware may have HTO contamination of typically less than one curie.  Some of this tritium may exchange with organic materials producing small quantities of tritiated organics or metal tritides.  Glass capsule targets ('exploding pushers'), which come prefilled with up to approximately 75mCi of Tritium are handled in B298.  Also, previously filled targets containing residual amounts of tritium may be worked on in B298.\nThe DT generator in B-381 once used titanium tritide targets, containing less than one curie each.  While the DT generator itself has been deactivated the internals of the unit remain contaminated. Titanium Tritide targets still remain in the laboratory.  The DT generator and associated laboratory space is slated for decommissioning.\nNIF ignition targets are shot in B581 and contain different mixtures of hydrogen isotopes (DT, THD- tritium hydrogen deuterium) depending on the shot. Amounts vary from a few millicuries to tens of curies per shot.  After each shot, most of the tritium is recovered to the tritium processing system, although a small residual amount will remain on interior surfaces of the target chamber and other exposed hardware.  Most of this tritium is expected to be in the form of HTO.  Some may be elemental tritium and a small fraction may be in the form of tritiated organics or metal tritides.",
+      "similarity_score": 0.7688868633240142,
+      "metadata": {
+        "context": "- Details specific tritium handling protocols and equipment used at LLNL facilities.\n- Follows previous sections discussing STC dosimetry and general handling practices.\n- Sets the stage for understanding contamination risks and management in operational contexts.\n- Connects to overarching themes of safety, monitoring, and regulatory compliance in tritium operations.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          7
+        ],
+        "title": "\uf0b7 NIF Facilities"
+      }
+    },
+    {
+      "text": "The general guidelines of Section 11 of the IDPM should be used for response to suspected intakes of STCs.",
+      "similarity_score": 0.763800747146653,
+      "metadata": {
+        "context": "- Outlines protocol for addressing suspected intakes of special tritium compounds (STCs).\n- Follows a comprehensive overview of monitoring and assessment strategies for STCs.\n- Connects to Section 11 of the Internal Dosimetry Program Manual (IDPM) for procedural guidance.\n- Reinforces the document's emphasis on safety and risk management in handling STCs.",
+        "filename": "591772.pdf",
+        "page_numbers": [
+          116
+        ],
+        "title": "C.8.10 Incident Response"
+      }
+    }
+  ]
+}

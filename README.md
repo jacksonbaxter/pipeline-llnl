@@ -9,33 +9,69 @@
 - **Flexible Output**: Export to HTML, Markdown, JSON, or plain text
 - **High Performance**: Efficient processing on local hardware
 
-## Getting Started with the Example
+## Step-by-Step Installation & Usage Guide
 
-### Prerequisites
+### 1. Prerequisites
+- Python 3.8+
+- [pip](https://pip.pypa.io/en/stable/)
+- (Optional) [virtualenv](https://virtualenv.pypa.io/en/latest/) for isolated environments
 
-1. Install the required packages:
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set up your environment variables by creating a `.env` file:
+### 3. Environment Variables & API Keys
+Create a `.env` file in the project root with the following content:
 
-```bash
-OPENAI_API_KEY=your_api_key_here
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+# Name of the local model to use (e.g., Qwen, Llama, etc.)
+QWEN_MODEL_NAME=Alibaba-NLP/gte-Qwen2-1.5B-instruct
 ```
+- Only the OpenAI key and (optionally) a key for your local model are required.
+- If using a different local model, set `QWEN_MODEL_NAME` to the name or path of your downloaded model.
+- If your local model requires a key, add it to `.env` as needed (e.g., `LOCAL_MODEL_KEY=your_key`).
+- The variable `USE_CONTEXTUAL_EMBEDDINGS` is not used and can be ignored.
 
-### Running the Example
+### 4. Running the Pipeline
+Run each step in order:
 
-Execute the files in order to build and query the document database:
+1. Extract document content:
+   ```bash
+   python 1-extraction.py
+   ```
+2. Chunk the documents:
+   ```bash
+   python 2-chunking.py
+   ```
+3. Generate embeddings and store in LanceDB:
+   ```bash
+   python 3-embedding.py
+   ```
+4. (Optional) Test search:
+   ```bash
+   python 4-search.py
+   ```
+5. Launch the Streamlit chat interface:
+   ```bash
+   streamlit run 5-chat.py
+   ```
+   Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
-1. Extract document content: `python 1-extraction.py`
-2. Create document chunks: `python 2-chunking.py`
-3. Create embeddings and store in LanceDB: `python 3-embedding.py`
-4. Test basic search functionality: `python 4-search.py`
-5. Launch the Streamlit chat interface: `streamlit run 5-chat.py`
+### 5. Switching Local Models (e.g., Qwen, Llama, etc.)
+- Qwen is used as a local model by default. To use another local model (such as Llama or a different Qwen variant):
+  1. Download your desired model and place it in an accessible location.
+  2. Change the `QWEN_MODEL_NAME` variable in your `.env` file to the new model's name or path.
+  3. (Re)run the pipeline scripts as needed.
+- No code changes are required—just update the `.env` file.
+- Make sure your model is compatible with the pipeline's embedding or inference code.
 
-Then open your browser and navigate to `http://localhost:8501` to interact with the document Q&A interface.
+### 6. Notes
+- Only OpenAI and local model keys are needed in `.env`.
+- For more advanced usage or troubleshooting, see the comments in each script.
+- If you encounter errors with local models, verify the model path and compatibility.
 
 ## Document Processing
 
